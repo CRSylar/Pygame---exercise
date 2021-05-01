@@ -6,6 +6,7 @@ pygame.init()
 pygame.font.init()
 
 # SPRITE
+_home_ = pygame.image.load('immagini/home_sfondo.png')
 _sfondo_ = pygame.image.load('immagini/sfondo.png')
 _bird_	= pygame.image.load('immagini/uccello.png')
 _ground_ = pygame.image.load('immagini/base.png')
@@ -17,7 +18,7 @@ _pipeup_ = pygame.transform.flip(_pipedwn_, False, True)
 WIN	= pygame.display.set_mode((288, 512))
 FPS	= 60
 GRND_VEL = 5
-FONT = pygame.font.SysFont('Comic Sans MC', 40, bold=True)
+FONT = pygame.font.SysFont('Comic Sans MC', 25, bold=True)
 pygame.display.set_caption("Flappy Bird!")
 
 # PIPE
@@ -61,7 +62,7 @@ def	draw_obj():
 		pipe.go_and_draw()
 	WIN.blit(_bird_, (_birdx, _birdy))
 	WIN.blit(_ground_, (_grndx, 450))
-	_scoretab = FONT.render(str(_score), 0, (240, 240, 240))
+	_scoretab = FONT.render(str(_score), 1, (240, 240, 240))
 	WIN.blit(_scoretab, (200, 0))
 
 # REFRESH SCREEN
@@ -83,11 +84,16 @@ def	_initialize():
 	_pipes = []
 	_pipes.append(pipe_class())
 	_thrugh = False
+	_main_menu()
 
 # GAME OVER
 def	_game_over():
 	WIN.blit(_gameover_, (50,180))
+	WIN.blit(FONT.render('Press space to continue', 1, (240, 240, 240)), (35, 250))
 	refresh()
+	_f = open("./Srcs/res.txt", 'w+')
+	_f.write(str(_score))
+	_f.close()
 	restart = False
 	while not restart:
 		for event in pygame.event.get() :
@@ -95,6 +101,22 @@ def	_game_over():
 				_initialize()
 				restart = True
 				loop = True
+			if event.type == pygame.QUIT:
+				pygame.quit()
+				sys.exit(0)
+
+# MAIN MENU
+def _main_menu():
+	loop = True
+	while loop:
+		WIN.blit(_home_, (0, 0))
+		_f = open("./Srcs/res.txt")
+		WIN.blit(FONT.render('Record :', 1, (240, 240, 240)), (90, 150))
+		WIN.blit(FONT.render(_f.read(), 1, (240, 240, 240)), (110, 180))
+		refresh()
+		for event in pygame.event.get() :
+			if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+				loop = False
 			if event.type == pygame.QUIT:
 				pygame.quit()
 				sys.exit(0)
@@ -123,6 +145,8 @@ while True:
 			max_pipesx = pipe.x
 	if max_pipesx < 150:
 		_pipes.append(pipe_class())
+	if pipe.x < 0:
+		_pipes.remove(pipe)
 # PIPE COLLISION
 	for pipe in _pipes:
 		pipe.collision(_bird_, _birdx, _birdy)
