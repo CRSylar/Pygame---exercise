@@ -1,2 +1,3 @@
-# Pygame---GinaPina_World
-progetto per videogioco platform in python per GinaPina
+# Pygame---exercise
+
+some simple games in python using Pygame
